@@ -21,10 +21,17 @@ export default function TablaSuscripciones({
 }: Props) {
   const formatearFecha = (fecha: string) => {
     return new Date(fecha).toLocaleDateString('es-ES', {
-      year: 'numeric',
+      day: '2-digit',
       month: 'short',
-      day: 'numeric',
+      year: 'numeric',
     });
+  };
+
+  const formatearPrecio = (precio: number) => {
+    return new Intl.NumberFormat('es-PE', {
+      style: 'currency',
+      currency: 'PEN',
+    }).format(precio);
   };
 
   const obtenerEstiloBadge = (estado: EstadoSuscripcion) => {
@@ -48,7 +55,7 @@ export default function TablaSuscripciones({
         <div className="animate-pulse">
           <div className="h-12 bg-gray-200"></div>
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-gray-100 border-t border-gray-200"></div>
+            <div key={i} className="h-20 bg-gray-100 border-t border-gray-200"></div>
           ))}
         </div>
       </div>
@@ -75,16 +82,13 @@ export default function TablaSuscripciones({
                 Cliente
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                Documento
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 Plan
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                F. Inicio
+                Vigencia
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                F. Fin
+                Finanzas
               </th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
                 Estado
@@ -97,7 +101,7 @@ export default function TablaSuscripciones({
           <tbody className="divide-y divide-gray-200">
             {pageData?.content.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                   No hay suscripciones registradas
                 </td>
               </tr>
@@ -107,46 +111,83 @@ export default function TablaSuscripciones({
                   key={suscripcion.id}
                   className="hover:bg-gray-50 transition-colors"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {suscripcion.nombreCliente}
+                  {/* CLIENTE */}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <div className="text-sm font-medium text-gray-900">
+                        {suscripcion.nombreCliente}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {suscripcion.documentoCliente}
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {suscripcion.documentoCliente}
+
+                  {/* PLAN */}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <div className="text-sm text-gray-900">
+                        {suscripcion.nombrePlan}
+                      </div>
+                      {!suscripcion.planActivo && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-600 w-max mt-1">
+                          Descontinuado
+                        </span>
+                      )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {suscripcion.nombrePlan}
+
+                  {/* VIGENCIA */}
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-600">
+                      {formatearFecha(suscripcion.fechaInicio)} al {formatearFecha(suscripcion.fechaFin)}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {formatearFecha(suscripcion.fechaInicio)}
+
+                  {/* FINANZAS */}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <div className={`text-sm ${suscripcion.estadoSuscripcion === 'CANCELADA' ? 'text-gray-500' : 'text-gray-800'}`}>
+                        Total: {formatearPrecio(suscripcion.precioTotal)}
+                      </div>
+                      {suscripcion.estadoSuscripcion === 'CANCELADA' ? (
+                        <div className="text-xs text-gray-400 mt-0.5">
+                          Deuda anulada
+                        </div>
+                      ) : (
+                        <>
+                          {suscripcion.saldoPendiente > 0 ? (
+                            <div className="text-xs text-red-600 font-medium mt-0.5">
+                              Deuda: {formatearPrecio(suscripcion.saldoPendiente)}
+                            </div>
+                          ) : (
+                            <div className="text-xs text-green-600 font-medium mt-0.5">
+                              Pagado
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {formatearFecha(suscripcion.fechaFin)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+
+                  {/* ESTADO */}
+                  <td className="px-6 py-4 text-center">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${obtenerEstiloBadge(suscripcion.estadoSuscripcion)}`}>
                       {suscripcion.estadoSuscripcion}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <div className="flex items-center justify-center gap-3">
-                      {/* Botón Cobrar - Solo para PENDIENTE_PAGO */}
-                      {suscripcion.estadoSuscripcion === 'PENDIENTE_PAGO' && (
+
+                  {/* ACCIONES */}
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      {/* Botón Cobrar - Mostrar si hay saldo pendiente y no está CANCELADA */}
+                      {suscripcion.saldoPendiente > 0 && suscripcion.estadoSuscripcion !== 'CANCELADA' && (
                         <button
                           onClick={() => onCobrar(suscripcion.id)}
-                          className="text-green-600 hover:text-green-800 transition-colors"
-                          title="Cobrar suscripción"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                          title={`Cobrar saldo pendiente: ${formatearPrecio(suscripcion.saldoPendiente)}`}
                         >
-                          <DollarSign size={18} />
+                          <DollarSign size={14} />
                         </button>
                       )}
                       
@@ -160,7 +201,9 @@ export default function TablaSuscripciones({
                           <Ban size={18} />
                         </button>
                       ) : (
-                        <span className="text-gray-400 text-xs">-</span>
+                        suscripcion.saldoPendiente === 0 && (
+                          <span className="text-gray-400 text-xs">-</span>
+                        )
                       )}
                     </div>
                   </td>

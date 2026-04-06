@@ -4,8 +4,23 @@ import { PageResponse } from '@/types/clientes.dto';
 
 const ENDPOINT = `${API_BASE_URL}/pagos`;
 
-export async function obtenerHistorialPagos(page: number = 0, size: number = 10): Promise<PageResponse<PagoResponseDto>> {
-  const response = await fetch(`${ENDPOINT}?page=${page}&size=${size}`, {
+export async function obtenerHistorialPagos(
+  page: number = 0, 
+  size: number = 10,
+  search?: string,
+  fechaDesde?: string,
+  fechaHasta?: string
+): Promise<PageResponse<PagoResponseDto>> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString(),
+  });
+
+  if (search) params.append('query', search);
+  if (fechaDesde) params.append('inicio', fechaDesde);
+  if (fechaHasta) params.append('fin', fechaHasta);
+
+  const response = await fetch(`${ENDPOINT}?${params.toString()}`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });

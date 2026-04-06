@@ -4,8 +4,18 @@ import { PageResponse } from '@/types/clientes.dto';
 
 const ENDPOINT = `${API_BASE_URL}/planes`;
 
-export async function obtenerPlanes(page: number = 0, size: number = 10): Promise<PageResponse<PlanResponseDto>> {
-  const response = await fetch(`${ENDPOINT}?page=${page}&size=${size}`, {
+export async function obtenerPlanes(
+  page: number = 0, 
+  size: number = 10,
+  incluirInactivos: boolean = false
+): Promise<PageResponse<PlanResponseDto>> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString(),
+    incluirInactivos: incluirInactivos.toString(),
+  });
+
+  const response = await fetch(`${ENDPOINT}?${params.toString()}`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });

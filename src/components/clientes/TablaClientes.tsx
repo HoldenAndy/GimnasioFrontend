@@ -108,7 +108,7 @@ export default function TablaClientes({
                       onClick={() => onVerPerfil(cliente)}
                       className="text-sm font-bold text-blue-600 hover:underline cursor-pointer transition-colors"
                     >
-                      {cliente.nombres} {cliente.apellidos}
+                      {cliente.apellidos} {cliente.nombres}
                     </button>
                   </td>
                   <td className="px-6 py-4">

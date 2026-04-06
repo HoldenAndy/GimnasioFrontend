@@ -82,11 +82,18 @@ export default function TablaPlanes({
               pageData?.content.map((plan) => (
                 <tr
                   key={plan.id}
-                  className="hover:bg-gray-50 transition-colors"
+                  className={`hover:bg-gray-50 transition-colors ${plan.activo === false ? 'opacity-60' : ''}`}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {plan.nombre}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-900">
+                        {plan.nombre}
+                      </span>
+                      {plan.activo === false && (
+                        <span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+                          Inactivo
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4">

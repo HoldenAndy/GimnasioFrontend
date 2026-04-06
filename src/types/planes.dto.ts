@@ -4,6 +4,7 @@ export interface PlanResponseDto {
   descripcion?: string;
   duracionDias: number;
   precio: number;
+  estadoActivo: boolean;
 }
 
 export interface PlanRequestDto {

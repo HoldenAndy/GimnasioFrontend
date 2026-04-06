@@ -10,6 +10,9 @@ export interface SuscripcionResponseDto {
   fechaInicio: string; // LocalDate viaja como string 'YYYY-MM-DD'
   fechaFin: string;
   estadoSuscripcion: EstadoSuscripcion;
+  planActivo: boolean;
+  precioTotal: number;
+  saldoPendiente: number;
 }
 
 export interface SuscripcionRequestDto {
